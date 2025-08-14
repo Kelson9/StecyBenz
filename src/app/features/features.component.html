@@ -1,0 +1,140 @@
+<section class="features-section">
+  <!-- Animated Background -->
+  <div class="section-background">
+    <div class="bg-gradient"></div>
+    <div class="geometric-shapes">
+      <div class="shape hexagon-1"></div>
+      <div class="shape hexagon-2"></div>
+      <div class="shape circle-1"></div>
+      <div class="shape circle-2"></div>
+      <div class="shape triangle-1"></div>
+      <div class="shape triangle-2"></div>
+    </div>
+    <div class="floating-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="orb orb-4"></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Section Header -->
+    <div class="section-header">
+      <div class="header-decoration">
+        <div class="decoration-line"></div>
+        <div class="decoration-diamond">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L14 8L22 10L14 12L12 18L10 12L2 10L10 8L12 2Z"/>
+          </svg>
+        </div>
+        <div class="decoration-line"></div>
+      </div>
+
+      <h2 class="section-title">
+        <span class="title-word">Our</span>
+        <span class="title-word">Key</span>
+        <span class="title-highlight">Features</span>
+      </h2>
+
+      <p class="section-subtitle">
+        Discover what makes Stecy Benz Boutique the premier destination for luxury hair care and styling solutions
+      </p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="features-grid">
+      <div 
+        class="feature-item" 
+        *ngFor="let feature of features; let i = index"
+        [style.animation-delay.ms]="i * 150"
+        (mouseenter)="onFeatureHover(i)"
+        (mouseleave)="onFeatureLeave(i)"
+      >
+        <div class="feature-card">
+          <!-- Icon Container -->
+          <div class="icon-container">
+            <div class="icon-bg">
+              <div class="icon-bg-layer-1"></div>
+              <div class="icon-bg-layer-2"></div>
+            </div>
+            <div class="icon-wrapper">
+              <div class="icon-inner">
+                <svg 
+                  width="40" 
+                  height="40" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  [innerHTML]="feature.iconSvg"
+                  class="feature-icon"
+                ></svg>
+              </div>
+              <div class="icon-pulse"></div>
+            </div>
+            
+            <!-- Floating Elements -->
+            <div class="icon-particles">
+              <div class="particle particle-1"></div>
+              <div class="particle particle-2"></div>
+              <div class="particle particle-3"></div>
+              <div class="particle particle-4"></div>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="feature-content">
+            <h3 class="feature-title">{{ feature.title }}</h3>
+            <p class="feature-description">{{ feature.description }}</p>
+            
+            <!-- Stats/Badge -->
+            <div class="feature-stats" *ngIf="feature.stats">
+              <div class="stat-item" *ngFor="let stat of feature.stats">
+                <span class="stat-value">{{ stat.value }}</span>
+                <span class="stat-label">{{ stat.label }}</span>
+              </div>
+            </div>
+
+            <!-- Action Button -->
+            <button class="feature-btn" (click)="onLearnMore(feature)">
+              <span class="btn-text">Learn More</span>
+              <div class="btn-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          <!-- Hover Effects -->
+          <div class="card-glow"></div>
+          <div class="card-shine"></div>
+        </div>
+
+        <!-- Connection Lines (for desktop) -->
+        <div class="connection-line" *ngIf="i < features.length - 1"></div>
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="features-cta">
+      <div class="cta-content">
+        <h3 class="cta-title">Experience the Stecy Benz Difference</h3>
+        <p class="cta-subtitle">Ready to transform your hair care routine with our premium features?</p>
+        <div class="cta-buttons">
+          <button class="cta-btn primary" (click)="onGetStarted()">
+            <span class="btn-content">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6.01" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Get Started Now
+            </span>
+          </button>
+          <button class="cta-btn secondary" (click)="onContactUs()">
+            <span class="btn-content">Contact Us</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

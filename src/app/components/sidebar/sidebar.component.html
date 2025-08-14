@@ -1,0 +1,303 @@
+<nav class="sidebar-nav" [class.collapsed]="isCollapsed">
+  <!-- Sidebar Header -->
+  <div class="sidebar-header">
+    <div class="brand-container">
+      <div class="brand-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 22L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+        </svg>
+        <div class="logo-glow"></div>
+      </div>
+      <div class="brand-text" *ngIf="!isCollapsed">
+        <span class="brand-name">StecyBenz</span>
+        <span class="brand-tagline">Admin Panel</span>
+      </div>
+    </div>
+    
+    <button class="collapse-btn" (click)="toggleSidebar()" [attr.aria-label]="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path [attr.d]="isCollapsed ? 'M9 18l6-6-6-6' : 'M15 18l-6-6 6-6'"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- User Profile Section -->
+  <div class="user-profile" *ngIf="!isCollapsed">
+    <div class="profile-card">
+      <div class="profile-avatar">
+        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face" alt="Admin">
+        <div class="status-indicator"></div>
+      </div>
+      <div class="profile-info">
+        <span class="profile-name">John Admin</span>
+        <span class="profile-role">Administrator</span>
+      </div>
+      <button class="profile-menu-btn" (click)="toggleProfileMenu()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="1"/>
+          <circle cx="12" cy="5" r="1"/>
+          <circle cx="12" cy="19" r="1"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Profile Dropdown -->
+    <div class="profile-dropdown" [class.show]="showProfileMenu">
+      <a href="#" class="dropdown-item" (click)="profileAction('profile')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        My Profile
+      </a>
+      <a href="#" class="dropdown-item" (click)="profileAction('settings')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v6m0 6v6"/>
+          <path d="M17.5 7.5L16 9l-1.5-1.5"/>
+          <path d="M9 16l-1.5 1.5L6 16"/>
+        </svg>
+        Settings
+      </a>
+      <div class="dropdown-divider"></div>
+      <a href="#" class="dropdown-item logout" (click)="profileAction('logout')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16,17 21,12 16,7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <div class="nav-menu">
+    <div class="menu-section">
+      <div class="section-label" *ngIf="!isCollapsed">Main Menu</div>
+      
+      <!-- Dashboard -->
+      <div class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <a routerLink="/dashboard" class="nav-link" [attr.title]="isCollapsed ? 'Dashboard' : null">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </div>
+          <span class="nav-text" *ngIf="!isCollapsed">Dashboard</span>
+          <div class="nav-indicator"></div>
+        </a>
+      </div>
+
+      <!-- Products -->
+      <div class="nav-item has-submenu" [class.expanded]="expandedItems.products">
+        <a class="nav-link" (click)="toggleSubmenu('products')" [attr.title]="isCollapsed ? 'Products' : null">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+              <line x1="7" y1="7" x2="7.01" y2="7"/>
+            </svg>
+          </div>
+          <span class="nav-text" *ngIf="!isCollapsed">Products</span>
+          <div class="submenu-arrow" *ngIf="!isCollapsed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </div>
+          <div class="nav-indicator"></div>
+        </a>
+        
+        <div class="submenu" *ngIf="!isCollapsed">
+          <a routerLink="/dashboard/products" routerLinkActive="active" class="submenu-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            View Products
+          </a>
+          <a routerLink="/dashboard/products/create" routerLinkActive="active" class="submenu-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            Create Product
+          </a>
+          <a routerLink="/dashboard/products/categories" routerLinkActive="active" class="submenu-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            Categories
+          </a>
+        </div>
+      </div>
+
+      <!-- Events -->
+      <div class="nav-item has-submenu" [class.expanded]="expandedItems.events">
+        <a class="nav-link" (click)="toggleSubmenu('events')" [attr.title]="isCollapsed ? 'Events' : null">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <span class="nav-text" *ngIf="!isCollapsed">Events</span>
+          <div class="submenu-arrow" *ngIf="!isCollapsed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </div>
+          <div class="nav-indicator"></div>
+        </a>
+        
+        <div class="submenu" *ngIf="!isCollapsed">
+          <a routerLink="/dashboard/events" routerLinkActive="active" class="submenu-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            View Events
+          </a>
+          <a routerLink="/dashboard/events/create" routerLinkActive="active" class="submenu-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            Create Event
+          </a>
+          <a routerLink="/dashboard/events/calendar" routerLinkActive="active" class="submenu-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Calendar View
+          </a>
+        </div>
+      </div>
+
+      <!-- Orders -->
+      <div class="nav-item" routerLinkActive="active">
+        <a routerLink="/dashboard/orders" class="nav-link" [attr.title]="isCollapsed ? 'Orders' : null">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+          </div>
+          <span class="nav-text" *ngIf="!isCollapsed">Orders</span>
+          <div class="notification-badge" *ngIf="orderNotifications > 0">{{ orderNotifications }}</div>
+          <div class="nav-indicator"></div>
+        </a>
+      </div>
+
+      <!-- Customers -->
+      <div class="nav-item" routerLinkActive="active">
+        <a routerLink="/dashboard/customers" class="nav-link" [attr.title]="isCollapsed ? 'Customers' : null">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <span class="nav-text" *ngIf="!isCollapsed">Customers</span>
+          <div class="nav-indicator"></div>
+        </a>
+      </div>
+
+      <!-- Analytics -->
+      <div class="nav-item" routerLinkActive="active">
+        <a routerLink="/dashboard/analytics" class="nav-link" [attr.title]="isCollapsed ? 'Analytics' : null">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+            </svg>
+          </div>
+          <span class="nav-text" *ngIf="!isCollapsed">Analytics</span>
+          <div class="nav-indicator"></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Secondary Section -->
+    <div class="menu-section">
+      <div class="section-label" *ngIf="!isCollapsed">System</div>
+      
+      <!-- Settings -->
+      <div class="nav-item" routerLinkActive="active">
+        <a routerLink="/dashboard/settings" class="nav-link" [attr.title]="isCollapsed ? 'Settings' : null">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v6m0 6v6m5.5-13v6m0 6v6m-11-6v6m0-6v-6m0-6v6"/>
+            </svg>
+          </div>
+          <span class="nav-text" *ngIf="!isCollapsed">Settings</span>
+          <div class="nav-indicator"></div>
+        </a>
+      </div>
+
+      <!-- Support -->
+      <div class="nav-item">
+        <a href="#" class="nav-link" (click)="openSupport()" [attr.title]="isCollapsed ? 'Support' : null">
+          <div class="nav-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <span class="nav-text" *ngIf="!isCollapsed">Support</span>
+          <div class="nav-indicator"></div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar Footer -->
+  <div class="sidebar-footer" *ngIf="!isCollapsed">
+    <div class="footer-card">
+      <div class="upgrade-prompt">
+        <div class="upgrade-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 22L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+        <h4>Upgrade to Pro</h4>
+        <p>Get access to premium features and advanced analytics</p>
+        <button class="upgrade-btn" (click)="showUpgradeModal()">
+          Upgrade Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button (when collapsed) -->
+  <div class="floating-actions" *ngIf="isCollapsed">
+    <button class="fab primary" (click)="quickAction('add')" title="Quick Add">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
+    <button class="fab secondary" (click)="quickAction('search')" title="Quick Search">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="M21 21l-4.35-4.35"/>
+      </svg>
+    </button>
+  </div>
+</nav>

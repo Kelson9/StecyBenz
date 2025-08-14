@@ -1,0 +1,156 @@
+<section class="trendy-collection-section">
+  <!-- Background Elements -->
+  <div class="section-background">
+    <div class="gradient-overlay"></div>
+    <div class="animated-patterns">
+      <div class="pattern pattern-1"></div>
+      <div class="pattern pattern-2"></div>
+      <div class="pattern pattern-3"></div>
+    </div>
+    <div class="floating-elements">
+      <div class="element element-1"></div>
+      <div class="element element-2"></div>
+      <div class="element element-3"></div>
+      <div class="element element-4"></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Section Header -->
+    <div class="section-header">
+      <div class="header-decoration">
+        <div class="deco-line left"></div>
+        <div class="deco-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="deco-line right"></div>
+      </div>
+      
+      <h2 class="section-title">
+        <span class="title-main">Trendy</span>
+        <span class="title-accent">Collection</span>
+      </h2>
+      
+      <p class="section-subtitle">
+        Discover the latest trends in hair care and styling. Our curated collections bring you the most innovative and stylish products.
+      </p>
+    </div>
+
+    <!-- Collections Grid -->
+    <div class="collections-grid">
+      <div 
+        class="collection-card" 
+        *ngFor="let collection of collections; let i = index"
+        [style.animation-delay.ms]="i * 200"
+        (mouseenter)="onCardHover(i)"
+        (mouseleave)="onCardLeave(i)"
+      >
+        <div class="card-inner">
+          <!-- Image Container -->
+          <div class="image-container">
+            <div class="image-wrapper">
+              <img [src]="collection.image" [alt]="collection.name" class="collection-image" />
+              <div class="image-overlay">
+                <div class="overlay-content">
+                  <button class="explore-btn" (click)="onExploreCollection(collection)">
+                    <span class="btn-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                    <span class="btn-text">Explore Collection</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Collection Badge -->
+            <div class="collection-badge" *ngIf="collection.isNew || collection.isTrending">
+              <span class="badge new-badge" *ngIf="collection.isNew">New</span>
+              <span class="badge trending-badge" *ngIf="collection.isTrending">🔥 Trending</span>
+            </div>
+
+            <!-- Item Count -->
+            <div class="item-count">
+              <span class="count">{{ collection.itemCount }}+</span>
+              <span class="label">Items</span>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="card-content">
+            <div class="content-header">
+              <h3 class="collection-name">{{ collection.name }}</h3>
+              <div class="collection-stats" *ngIf="collection.rating">
+                <div class="rating">
+                  <span class="rating-value">{{ collection.rating }}</span>
+                  <div class="stars">
+                    <span *ngFor="let star of [1,2,3,4,5]" 
+                          class="star" 
+                          [class.filled]="star <= collection.rating">★</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <p class="collection-desc">{{ collection.desc }}</p>
+            
+            <!-- Price Range -->
+            <div class="price-range" *ngIf="collection.priceRange">
+              <span class="price-label">From</span>
+              <span class="price-value">{{ collection.priceRange }}</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card-actions">
+              <button class="action-btn primary" (click)="onShopNow(collection)">
+                <span class="btn-content">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6.01" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  Shop Now
+                </span>
+              </button>
+              
+              <button class="action-btn secondary" (click)="onViewDetails(collection)">
+                <span class="btn-content">Learn More</span>
+              </button>
+            </div>
+
+            <!-- Features -->
+            <div class="collection-features" *ngIf="collection.features">
+              <div class="feature" *ngFor="let feature of collection.features">
+                <span class="feature-icon">{{ feature.icon }}</span>
+                <span class="feature-text">{{ feature.text }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hover Effects -->
+        <div class="card-glow"></div>
+        <div class="card-particles">
+          <div class="particle" *ngFor="let p of [1,2,3,4,5]"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="cta-section">
+      <div class="cta-content">
+        <h3 class="cta-title">Ready to Transform Your Look?</h3>
+        <p class="cta-subtitle">Browse our complete collection and find the perfect products for your hair type</p>
+        <button class="cta-btn" (click)="onViewAllCollections()">
+          <span class="cta-text">View All Collections</span>
+          <div class="cta-arrow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

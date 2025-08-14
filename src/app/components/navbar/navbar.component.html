@@ -1,0 +1,234 @@
+<header class="navbar" [class.sidebar-collapsed]="sidebarCollapsed">
+  <div class="navbar-content">
+    <!-- Left Section -->
+    <div class="navbar-left">
+      <button class="mobile-menu-btn" (click)="toggleMobileMenu()" [class.active]="mobileMenuOpen">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
+      <div class="page-info">
+        <h1 class="page-title">{{ currentPageTitle }}</h1>
+        <div class="breadcrumb" *ngIf="breadcrumbs.length > 0">
+          <span *ngFor="let crumb of breadcrumbs; let i = index" class="breadcrumb-item">
+            <a [routerLink]="crumb.url" *ngIf="crumb.url; else textCrumb">{{ crumb.label }}</a>
+            <ng-template #textCrumb>{{ crumb.label }}</ng-template>
+            <svg *ngIf="i < breadcrumbs.length - 1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Section - Search -->
+    <div class="navbar-center">
+      <div class="search-container" [class.focused]="searchFocused">
+        <div class="search-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          placeholder="Search products, orders, customers..." 
+          [(ngModel)]="searchQuery"
+          (focus)="searchFocused = true"
+          (blur)="onSearchBlur()"
+          (keyup)="onSearch($event)"
+          #searchInput
+        >
+        <button class="search-filter-btn" (click)="toggleSearchFilters()" *ngIf="searchQuery">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/>
+          </svg>
+        </button>
+        
+        <!-- Search Results Dropdown -->
+        <div class="search-results" *ngIf="searchResults.length > 0 && searchFocused">
+          <div class="search-category" *ngFor="let category of searchCategories">
+            <div class="category-header">{{ category.name }}</div>
+            <a 
+              *ngFor="let result of getResultsByCategory(category.key)" 
+              class="search-result-item"
+              [routerLink]="result.url"
+              (click)="selectSearchResult(result)"
+            >
+              <div class="result-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path [attr.d]="result.icon"/>
+                </svg>
+              </div>
+              <div class="result-content">
+                <span class="result-title">{{ result.title }}</span>
+                <span class="result-subtitle">{{ result.subtitle }}</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Section -->
+    <div class="navbar-right">
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button class="action-btn" (click)="quickAction('add')" title="Quick Add">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+        
+        <button class="action-btn" (click)="quickAction('scan')" title="Scan QR/Barcode">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Notifications -->
+      <div class="notification-container">
+        <button class="notification-btn" (click)="toggleNotifications()" [class.has-notifications]="notifications.length > 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="notification-badge" *ngIf="unreadNotifications > 0">{{ unreadNotifications }}</span>
+        </button>
+
+        <!-- Notifications Dropdown -->
+        <div class="notifications-dropdown" [class.show]="showNotifications">
+          <div class="dropdown-header">
+            <h3>Notifications</h3>
+            <button class="mark-all-read" (click)="markAllAsRead()" *ngIf="unreadNotifications > 0">
+              Mark all as read
+            </button>
+          </div>
+          
+          <div class="notifications-list">
+            <div 
+              *ngFor="let notification of notifications; trackBy: trackNotification" 
+              class="notification-item"
+              [class.unread]="!notification.read"
+              (click)="markAsRead(notification)"
+            >
+              <div class="notification-icon" [ngClass]="notification.type">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path [attr.d]="getNotificationIcon(notification.type)"/>
+                </svg>
+              </div>
+              <div class="notification-content">
+                <p class="notification-title">{{ notification.title }}</p>
+                <p class="notification-message">{{ notification.message }}</p>
+                <span class="notification-time">{{ getTimeAgo(notification.timestamp) }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="dropdown-footer">
+            <a routerLink="/dashboard/notifications" class="view-all-link">View All Notifications</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <button class="settings-btn" (click)="openSettings()" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v6m0 6v6m5.5-13v6m0 6v6m-11-6v6m0-6v-6m0-6v6"/>
+        </svg>
+      </button>
+
+      <!-- Theme Toggle -->
+      <button class="theme-toggle" (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+        <svg *ngIf="!isDarkMode" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg *ngIf="isDarkMode" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+
+      <!-- User Profile -->
+      <div class="user-profile-container">
+        <button class="user-profile-btn" (click)="toggleUserMenu()">
+          <div class="user-avatar">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" alt="User">
+            <div class="status-dot"></div>
+          </div>
+          <div class="user-info" *ngIf="!sidebarCollapsed">
+            <span class="user-name">John Admin</span>
+            <span class="user-role">Administrator</span>
+          </div>
+          <div class="dropdown-arrow" *ngIf="!sidebarCollapsed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </div>
+        </button>
+
+        <!-- User Menu Dropdown -->
+        <div class="user-menu-dropdown" [class.show]="showUserMenu">
+          <div class="user-menu-header">
+            <div class="user-avatar large">
+              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop&crop=face" alt="User">
+            </div>
+            <div class="user-details">
+              <span class="user-name">John Admin</span>
+              <span class="user-email">john&#64;stecybenz.com</span>
+            </div>
+          </div>
+          
+          <div class="user-menu-items">
+            <a class="menu-item" routerLink="/dashboard/profile">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              My Profile
+            </a>
+            <a class="menu-item" routerLink="/dashboard/account">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v6m0 6v6"/>
+              </svg>
+              Account Settings
+            </a>
+            <a class="menu-item" routerLink="/dashboard/billing">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+              Billing
+            </a>
+            <div class="menu-divider"></div>
+            <button class="menu-item logout" (click)="logout()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16,17 21,12 16,7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="page-loading-bar" [class.active]="isLoading">
+    <div class="loading-progress"></div>
+  </div>
+</header>
