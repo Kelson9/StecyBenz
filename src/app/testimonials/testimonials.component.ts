@@ -29,7 +29,7 @@ export class TestimonialsComponent {
       position: 'Marketing Director',
       location: 'New York, NY',
       message: 'Stecy Benz completely transformed my hair! The consultation was thorough and the products recommended were perfect for my hair type. I\'ve never felt more confident about my hair.',
-      photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b131?w=400&h=400&fit=crop&crop=face',
+      photo: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400&h=400&fit=crop&crop=face',
       date: '2 weeks ago',
       service: 'Hair Consultation',
       verified: true

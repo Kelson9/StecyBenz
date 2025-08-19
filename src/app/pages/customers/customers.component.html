@@ -1,0 +1,519 @@
+<div class="customers-page">
+  <div class="container">
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">Customers Management</h1>
+        <p class="page-subtitle">Manage and track all your customers</p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn btn-outline" (click)="onExportCustomers()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7,10 12,15 17,10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export Data
+        </button>
+        <button class="btn btn-primary" (click)="onCreateCustomer()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Customer
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon customers">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.totalCustomers.toLocaleString() }}</div>
+          <div class="stat-label">Total Customers</div>
+          <div class="stat-change positive">+12% from last month</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon active">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+            <line x1="9" y1="9" x2="9.01" y2="9"/>
+            <line x1="15" y1="9" x2="15.01" y2="9"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.activeCustomers.toLocaleString() }}</div>
+          <div class="stat-label">Active Customers</div>
+          <div class="stat-change positive">{{ (stats.activeCustomers / stats.totalCustomers * 100) | number:'1.1-1' }}% active rate</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon revenue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ formatCurrency(stats.totalRevenue) }}</div>
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-change positive">+18% from last month</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon vip">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.vipCustomers }}</div>
+          <div class="stat-label">VIP Customers</div>
+          <div class="stat-change positive">{{ (stats.vipCustomers / stats.totalCustomers * 100) | number:'1.1-1' }}% of total</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customers List View -->
+    <div class="customers-content" *ngIf="currentView === 'list'">
+      
+      <!-- Filters Section -->
+      <div class="filters-section">
+        <div class="filters-row">
+          <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input 
+              type="text" 
+              [(ngModel)]="searchTerm"
+              placeholder="Search customers by name, email, or phone..."
+              class="search-input">
+          </div>
+          
+          <select [(ngModel)]="selectedStatus" class="filter-select">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="blocked">Blocked</option>
+          </select>
+
+          <select [(ngModel)]="selectedType" class="filter-select">
+            <option value="">All Types</option>
+            <option value="regular">Regular</option>
+            <option value="vip">VIP</option>
+            <option value="wholesale">Wholesale</option>
+          </select>
+
+          <select [(ngModel)]="selectedDateRange" class="filter-select">
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 3 months</option>
+            <option value="365">Last year</option>
+            <option value="all">All time</option>
+          </select>
+
+          <select [(ngModel)]="sortBy" class="filter-select">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="name">Name A-Z</option>
+            <option value="spent-high">Highest Spent</option>
+            <option value="spent-low">Lowest Spent</option>
+            <option value="orders-high">Most Orders</option>
+            <option value="orders-low">Least Orders</option>
+          </select>
+
+          <button class="btn btn-outline btn-sm" (click)="clearFilters()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"/>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Customers Table -->
+      <div class="table-container">
+        <table class="customers-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Contact</th>
+              <th>Orders</th>
+              <th>Total Spent</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let customer of paginatedCustomers; trackBy: trackByCustomerId" class="customer-row">
+              <td>
+                <div class="customer-info" (click)="selectCustomer(customer)">
+                  <div class="customer-avatar">
+                    <img *ngIf="customer.avatar" [src]="customer.avatar" [alt]="getCustomerName(customer)">
+                    <div *ngIf="!customer.avatar" class="avatar-placeholder">
+                      {{ getInitials(customer.firstName, customer.lastName) }}
+                    </div>
+                  </div>
+                  <div class="customer-details">
+                    <div class="customer-name">{{ getCustomerName(customer) }}</div>
+                    <div class="customer-meta">
+                      <span class="loyalty-points">{{ customer.loyaltyPoints }} pts</span>
+                      <span *ngIf="customer.lastLoginDate" class="last-seen">
+                        • Last seen {{ getDaysSinceLastOrder(customer) }}d ago
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              
+              <td>
+                <div class="contact-info">
+                  <div class="email">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                      <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    {{ customer.email }}
+                  </div>
+                  <div class="phone">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                    </svg>
+                    {{ customer.phone }}
+                  </div>
+                </div>
+              </td>
+              
+              <td>
+                <div class="orders-info">
+                  <div class="order-count">{{ customer.totalOrders }} orders</div>
+                  <div class="avg-order">Avg: {{ formatCurrency(customer.averageOrderValue) }}</div>
+                </div>
+              </td>
+              
+              <td>
+                <div class="spending-info">
+                  <div class="total-spent">{{ formatCurrency(customer.totalSpent) }}</div>
+                  <div *ngIf="customer.lastOrder" class="last-order">
+                    Last: {{ formatShortDate(customer.lastOrder) }}
+                  </div>
+                </div>
+              </td>
+              
+              <td>
+                <span class="badge" [class]="getCustomerTypeBadgeClass(customer.customerType)">
+                  {{ customer.customerType }}
+                </span>
+              </td>
+              
+              <td>
+                <span class="badge" [class]="getStatusBadgeClass(customer.status)">
+                  {{ customer.status }}
+                </span>
+              </td>
+              
+              <td>
+                <div class="date-info">
+                  <div class="join-date">{{ formatShortDate(customer.dateJoined) }}</div>
+                  <div class="days-since">{{ getDaysSinceJoined(customer) }} days ago</div>
+                </div>
+              </td>
+              
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="selectCustomer(customer)" title="View Details">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                  
+                  <button class="btn-icon" (click)="onEditCustomer(customer)" title="Edit Customer">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                    </svg>
+                  </button>
+                  
+                  <button class="btn-icon" (click)="onSendEmail(customer)" title="Send Email">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                      <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                  </button>
+                  
+                  <div class="dropdown">
+                    <button class="btn-icon dropdown-toggle" title="More Actions">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="1"/>
+                        <circle cx="12" cy="5" r="1"/>
+                        <circle cx="12" cy="19" r="1"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button class="btn btn-outline btn-sm" (click)="prevPage()" [disabled]="currentPage === 1">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+          Previous
+        </button>
+        
+        <div class="pagination-numbers">
+          <button 
+            *ngFor="let page of [].constructor(Math.min(totalPages, 5)); let i = index" 
+            class="page-btn"
+            [class.active]="currentPage === i + 1"
+            (click)="goToPage(i + 1)">
+            {{ i + 1 }}
+          </button>
+        </div>
+        
+        <button class="btn btn-outline btn-sm" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Next
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Results Info -->
+      <div class="results-info">
+        <p>Showing {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredCustomers.length) }} of {{ filteredCustomers.length }} customers</p>
+      </div>
+    </div>
+
+    <!-- Customer Details View -->
+    <div class="customers-content" *ngIf="currentView === 'details' && selectedCustomer">
+      <div class="customer-details">
+        
+        <!-- Back Button and Header -->
+        <div class="customer-details-header">
+          <div class="customer-title">
+            <button class="btn btn-outline btn-sm back-btn" (click)="backToList()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5"/>
+                <path d="M12 19l-7-7 7-7"/>
+              </svg>
+              Back to Customers
+            </button>
+            <div class="customer-title-section">
+              <div class="customer-avatar-large">
+                <img *ngIf="selectedCustomer.avatar" [src]="selectedCustomer.avatar" [alt]="getCustomerName(selectedCustomer)">
+                <div *ngIf="!selectedCustomer.avatar" class="avatar-placeholder">
+                  {{ getInitials(selectedCustomer.firstName, selectedCustomer.lastName) }}
+                </div>
+              </div>
+              <div class="customer-title-info">
+                <h2>{{ getCustomerName(selectedCustomer) }}</h2>
+                <div class="customer-badges">
+                  <span class="badge" [class]="getStatusBadgeClass(selectedCustomer.status)">{{ selectedCustomer.status }}</span>
+                  <span class="badge" [class]="getCustomerTypeBadgeClass(selectedCustomer.customerType)">{{ selectedCustomer.customerType }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="customer-actions">
+            <button class="btn btn-outline" (click)="onEditCustomer(selectedCustomer)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+              </svg>
+              Edit Customer
+            </button>
+            <button class="btn btn-outline" (click)="onSendEmail(selectedCustomer)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              Send Email
+            </button>
+            <button class="btn btn-outline" (click)="onViewOrders(selectedCustomer)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+              </svg>
+              View Orders
+            </button>
+          </div>
+        </div>
+
+        <!-- Customer Stats -->
+        <div class="customer-stats-grid">
+          <div class="customer-stat-card">
+            <h4>Total Orders</h4>
+            <div class="stat-value">{{ selectedCustomer.totalOrders }}</div>
+          </div>
+          <div class="customer-stat-card">
+            <h4>Total Spent</h4>
+            <div class="stat-value">{{ formatCurrency(selectedCustomer.totalSpent) }}</div>
+          </div>
+          <div class="customer-stat-card">
+            <h4>Average Order</h4>
+            <div class="stat-value">{{ formatCurrency(selectedCustomer.averageOrderValue) }}</div>
+          </div>
+          <div class="customer-stat-card">
+            <h4>Loyalty Points</h4>
+            <div class="stat-value">{{ selectedCustomer.loyaltyPoints }}</div>
+          </div>
+        </div>
+
+        <!-- Customer Details Grid -->
+        <div class="details-grid">
+          
+          <!-- Contact Information -->
+          <div class="details-card">
+            <h3>Contact Information</h3>
+            <div class="contact-details">
+              <div class="contact-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span>{{ selectedCustomer.email }}</span>
+              </div>
+              <div class="contact-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                </svg>
+                <span>{{ selectedCustomer.phone }}</span>
+              </div>
+              <div class="contact-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M8 2v4"/>
+                  <path d="M16 2v4"/>
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <path d="M3 10h18"/>
+                </svg>
+                <span>Joined {{ formatDate(selectedCustomer.dateJoined) }}</span>
+              </div>
+              <div *ngIf="selectedCustomer.lastLoginDate" class="contact-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12,6 12,12 16,14"/>
+                </svg>
+                <span>Last login {{ formatDate(selectedCustomer.lastLoginDate) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preferences -->
+          <div class="details-card">
+            <h3>Preferences</h3>
+            <div class="preferences-info">
+              <div class="preference-item">
+                <span class="preference-label">Contact Method:</span>
+                <span class="preference-value">{{ selectedCustomer.preferredContactMethod }}</span>
+              </div>
+              <div class="preference-item">
+                <span class="preference-label">Marketing Consent:</span>
+                <span class="preference-value" [class]="selectedCustomer.marketingConsent ? 'consent-yes' : 'consent-no'">
+                  {{ selectedCustomer.marketingConsent ? 'Yes' : 'No' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Information -->
+          <div *ngIf="selectedCustomer.addresses.length > 0" class="details-card">
+            <h3>Addresses</h3>
+            <div class="addresses-list">
+              <div *ngFor="let address of selectedCustomer.addresses" class="address-item">
+                <div class="address-type">{{ address.type | titlecase }}</div>
+                <div class="address-details">
+                  <p>{{ address.street }}</p>
+                  <p>{{ address.city }}, {{ address.state }} {{ address.zipCode }}</p>
+                  <p>{{ address.country }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="details-card">
+            <h3>Notes</h3>
+            <div class="notes-section">
+              <div *ngIf="selectedCustomer.notes" class="customer-notes">
+                {{ selectedCustomer.notes }}
+              </div>
+              <div *ngIf="!selectedCustomer.notes" class="no-notes">
+                No notes available
+              </div>
+              <button class="btn btn-outline btn-sm" (click)="onAddNote(selectedCustomer)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add Note
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div *ngIf="selectedCustomer.orders.length > 0" class="recent-orders-section">
+          <h3>Recent Orders ({{ selectedCustomer.orders.length }})</h3>
+          <div class="orders-table-container">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Order Number</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let order of selectedCustomer.orders">
+                  <td class="order-number">{{ order.orderNumber }}</td>
+                  <td>{{ formatShortDate(order.date) }}</td>
+                  <td class="order-total">{{ formatCurrency(order.total) }}</td>
+                  <td>
+                    <span class="badge" [class]="getStatusBadgeClass(order.status)">{{ order.status }}</span>
+                  </td>
+                  <td>
+                    <button class="btn-icon" title="View Order">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

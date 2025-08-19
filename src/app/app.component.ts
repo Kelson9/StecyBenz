@@ -10,6 +10,7 @@ import { TrendyCollectionComponent } from './trendy-collection/trendy-collection
 import { CommunityConsultancyComponent } from './community-consultancy/community-consultancy.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { CartService } from './shared/cart.service';
 
 @Component({
   selector: 'app-root',
@@ -31,7 +32,7 @@ export class AppComponent {
   title = 'stecy-benz';
    isHomeRoute = false;
 
-constructor(private router: Router) {
+constructor(private router: Router, private cartService: CartService) {
   this.router.events.subscribe(() => {
     this.isHomeRoute = this.router.url.startsWith('/home');
   });

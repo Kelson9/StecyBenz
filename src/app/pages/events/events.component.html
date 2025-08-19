@@ -1,1 +1,423 @@
-<p>events works!</p>
+<div class="events-dashboard">
+  <div class="container">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <h1 class="dashboard-title">Events Dashboard</h1>
+        <p class="dashboard-subtitle">Manage and track your events, attendees, and performance metrics</p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn btn-outline" (click)="onExportData()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7,10 12,15 17,10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export Data
+        </button>
+        <button class="btn btn-primary" (click)="onCreateEvent()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Create Event
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="dashboard-nav">
+      <button 
+        class="nav-tab" 
+        [class.active]="currentView === 'overview'"
+        (click)="setView('overview')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <line x1="9" y1="9" x2="15" y2="9"/>
+          <line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+        Overview
+      </button>
+      <button 
+        class="nav-tab" 
+        [class.active]="currentView === 'events'"
+        (click)="setView('events')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Events
+      </button>
+      <button 
+        class="nav-tab" 
+        [class.active]="currentView === 'attendees'"
+        (click)="setView('attendees')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Attendees
+      </button>
+      <button 
+        class="nav-tab" 
+        [class.active]="currentView === 'responses'"
+        (click)="setView('responses')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        </svg>
+        Feedback
+      </button>
+    </div>
+
+    <!-- Overview Section -->
+    <div class="dashboard-content" *ngIf="currentView === 'overview'">
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon events">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.totalEvents }}</div>
+            <div class="stat-label">Total Events</div>
+            <div class="stat-change positive">+12% from last month</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon attendees">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.totalAttendees.toLocaleString() }}</div>
+            <div class="stat-label">Total Attendees</div>
+            <div class="stat-change positive">+8% from last month</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon revenue">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ formatCurrency(stats.totalRevenue) }}</div>
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-change positive">+15% from last month</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon rating">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stats.averageRating }}</div>
+            <div class="stat-label">Average Rating</div>
+            <div class="stat-change positive">+0.2 from last month</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Events -->
+      <div class="overview-section">
+        <div class="section-header">
+          <h3>Recent Events</h3>
+          <button class="btn btn-outline btn-sm" (click)="setView('events')">View All</button>
+        </div>
+        <div class="events-summary">
+          <div class="event-summary-card" *ngFor="let event of events.slice(0, 3)">
+            <div class="event-summary-header">
+              <h4>{{ event.name }}</h4>
+              <span class="badge" [class]="getStatusBadgeClass(event.status)">{{ event.status }}</span>
+            </div>
+            <div class="event-summary-stats">
+              <div class="summary-stat">
+                <span class="stat-number">{{ event.registered }}/{{ event.capacity }}</span>
+                <span class="stat-text">Registered</span>
+              </div>
+              <div class="summary-stat">
+                <span class="stat-number">{{ formatCurrency(event.revenue) }}</span>
+                <span class="stat-text">Revenue</span>
+              </div>
+              <div class="summary-stat">
+                <span class="stat-number">{{ event.averageRating || 'N/A' }}</span>
+                <span class="stat-text">Rating</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Events Section -->
+    <div class="dashboard-content" *ngIf="currentView === 'events'">
+      <!-- Filters -->
+      <div class="filters-section">
+        <div class="filters-row">
+          <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input 
+              type="text" 
+              [(ngModel)]="searchTerm"
+              placeholder="Search events..."
+              class="search-input">
+          </div>
+          
+          <select [(ngModel)]="selectedStatus" class="filter-select">
+            <option value="">All Status</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+
+          <select [(ngModel)]="selectedCategory" class="filter-select">
+            <option value="">All Categories</option>
+            <option value="Workshop">Workshop</option>
+            <option value="Masterclass">Masterclass</option>
+            <option value="Seminar">Seminar</option>
+          </select>
+
+          <select [(ngModel)]="selectedTimeRange" class="filter-select">
+            <option value="7">Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 3 months</option>
+            <option value="365">Last year</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Events Table -->
+      <div class="table-container">
+        <table class="events-table">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Date & Time</th>
+              <th>Venue</th>
+              <th>Attendees</th>
+              <th>Revenue</th>
+              <th>Status</th>
+              <th>Rating</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let event of paginatedEvents" class="event-row">
+              <td>
+                <div class="event-info">
+                  <h4>{{ event.name }}</h4>
+                  <span class="event-category">{{ event.category }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="datetime-info">
+                  <div class="date">{{ formatDate(event.date) }}</div>
+                  <div class="time">{{ formatTime(event.time) }}</div>
+                </div>
+              </td>
+              <td>{{ event.venue }}</td>
+              <td>
+                <div class="attendee-stats">
+                  <div class="attendee-numbers">{{ event.registered }}/{{ event.capacity }}</div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="getCapacityUtilization(event)"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="revenue">{{ formatCurrency(event.revenue) }}</td>
+              <td>
+                <span class="badge" [class]="getStatusBadgeClass(event.status)">{{ event.status }}</span>
+              </td>
+              <td>
+                <div class="rating-cell" *ngIf="event.averageRating > 0">
+                  <div class="stars">
+                    <span *ngFor="let star of getStars(event.averageRating)" class="star" [class.filled]="star">★</span>
+                  </div>
+                  <span class="rating-number">{{ event.averageRating }}</span>
+                </div>
+                <span *ngIf="event.averageRating === 0" class="no-rating">No ratings</span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="onViewEvent(event)" title="View Details">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                  <button class="btn-icon" (click)="onEditEvent(event)" title="Edit Event">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button class="btn btn-outline btn-sm" (click)="prevPage()" [disabled]="currentPage === 1">
+          Previous
+        </button>
+        <span class="pagination-info">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+        <button class="btn btn-outline btn-sm" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Next
+        </button>
+      </div>
+    </div>
+
+    <!-- Event Details Section -->
+    <div class="dashboard-content" *ngIf="currentView === 'event-details' && selectedEvent">
+      <div class="event-details">
+        <!-- Event Header -->
+        <div class="event-header">
+          <button class="btn btn-outline btn-sm back-btn" (click)="setView('events')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5"/>
+              <path d="M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Events
+          </button>
+          
+          <div class="event-title-section">
+            <h2>{{ selectedEvent.name }}</h2>
+            <span class="badge" [class]="getStatusBadgeClass(selectedEvent.status)">{{ selectedEvent.status }}</span>
+          </div>
+        </div>
+
+        <!-- Event Stats -->
+        <div class="event-stats-grid">
+          <div class="event-stat-card">
+            <h4>Attendance Rate</h4>
+            <div class="stat-value">{{ getAttendanceRate(selectedEvent) | number:'1.1-1' }}%</div>
+          </div>
+          <div class="event-stat-card">
+            <h4>Capacity Utilization</h4>
+            <div class="stat-value">{{ getCapacityUtilization(selectedEvent) | number:'1.1-1' }}%</div>
+          </div>
+          <div class="event-stat-card">
+            <h4>Revenue per Attendee</h4>
+            <div class="stat-value">{{ formatCurrency(getRevenuePerAttendee(selectedEvent)) }}</div>
+          </div>
+          <div class="event-stat-card">
+            <h4>Feedback Rate</h4>
+            <div class="stat-value">{{ selectedEvent.attended > 0 ? (selectedEvent.totalFeedback / selectedEvent.attended * 100) : 0 | number:'1.1-1' }}%</div>
+          </div>
+        </div>
+
+        <!-- Attendees List -->
+        <div class="attendees-section">
+          <h3>Attendees ({{ selectedEvent.attendees.length }})</h3>
+          <div class="attendees-table-container">
+            <table class="attendees-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Contact</th>
+                  <th>Registration</th>
+                  <th>Status</th>
+                  <th>Payment</th>
+                  <th>Feedback</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let attendee of selectedEvent.attendees">
+                  <td>{{ attendee.name }}</td>
+                  <td>
+                    <div class="contact-info">
+                      <div>{{ attendee.email }}</div>
+                      <div>{{ attendee.phone }}</div>
+                    </div>
+                  </td>
+                  <td>{{ formatDate(attendee.registrationDate) }}</td>
+                  <td>
+                    <span class="status-badge" [class]="getAttendeeStatusClass(attendee.status)">
+                      {{ attendee.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="status-badge" [class]="getPaymentStatusClass(attendee.paymentStatus)">
+                      {{ attendee.paymentStatus }}
+                    </span>
+                  </td>
+                  <td>
+                    <div *ngIf="attendee.feedbackSubmitted" class="feedback-info">
+                      <div class="stars">
+                        <span *ngFor="let star of getStars(attendee.rating || 0)" class="star" [class.filled]="star">★</span>
+                      </div>
+                      <div class="feedback-text">{{ attendee.feedback }}</div>
+                    </div>
+                    <span *ngIf="!attendee.feedbackSubmitted" class="no-feedback">No feedback</span>
+                  </td>
+                  <td>
+                    <div class="attendee-actions">
+                      <button 
+                        class="btn-icon" 
+                        (click)="onSendReminder(attendee)" 
+                        title="Send Reminder">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                          <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                      </button>
+                      <button 
+                        *ngIf="attendee.status !== 'attended'" 
+                        class="btn-icon" 
+                        (click)="onMarkAttended(attendee)" 
+                        title="Mark as Attended">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="20,6 9,17 4,12"/>
+                        </svg>
+                      </button>
+                      <button 
+                        *ngIf="attendee.paymentStatus !== 'refunded'" 
+                        class="btn-icon danger" 
+                        (click)="onRefundTicket(attendee)" 
+                        title="Refund Ticket">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <line x1="15" y1="9" x2="9" y2="15"/>
+                          <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

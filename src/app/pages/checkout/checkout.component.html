@@ -1,0 +1,566 @@
+<app-header></app-header>
+<div class="checkout-page">
+  <!-- Progress Header -->
+  <div class="checkout-header">
+    <div class="container">
+      <div class="progress-bar">
+        <div class="progress-step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+          <div class="step-circle">
+            <svg *ngIf="currentStep > 1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20,6 9,17 4,12"/>
+            </svg>
+            <span *ngIf="currentStep <= 1">1</span>
+          </div>
+          <span class="step-label">Shipping</span>
+        </div>
+        
+        <div class="progress-line" [class.completed]="currentStep > 1"></div>
+        
+        <div class="progress-step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+          <div class="step-circle">
+            <svg *ngIf="currentStep > 2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20,6 9,17 4,12"/>
+            </svg>
+            <span *ngIf="currentStep <= 2">2</span>
+          </div>
+          <span class="step-label">Payment</span>
+        </div>
+        
+        <div class="progress-line" [class.completed]="currentStep > 2"></div>
+        
+        <div class="progress-step" [class.active]="currentStep >= 3">
+          <div class="step-circle">
+            <span>3</span>
+          </div>
+          <span class="step-label">Review</span>
+        </div>
+      </div>
+      
+      <h1 class="page-title">Secure Checkout</h1>
+      <p class="checkout-subtitle">Complete your order securely and safely</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="checkout-content">
+      <!-- Main Form -->
+      <div class="checkout-form">
+        <!-- Step 1: Shipping Information -->
+        <div class="form-section" *ngIf="currentStep === 1" [@slideIn]>
+          <div class="section-header">
+            <h2 class="section-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+              Shipping Information
+            </h2>
+            <p class="section-description">Where should we deliver your order?</p>
+          </div>
+
+          <form [formGroup]="shippingForm" class="form-grid">
+            <!-- Contact Information -->
+            <div class="form-group full-width">
+              <label class="form-label">Contact Information</label>
+              <div class="contact-row">
+                <div class="input-group">
+                  <input type="email" 
+                         formControlName="email"
+                         placeholder="Email address"
+                         class="form-input"
+                         [class.error]="shippingForm.get('email')?.errors && shippingForm.get('email')?.touched">
+                  <div class="input-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                      <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <input type="tel" 
+                         formControlName="phone"
+                         placeholder="Phone number"
+                         class="form-input"
+                         [class.error]="shippingForm.get('phone')?.errors && shippingForm.get('phone')?.touched">
+                  <div class="input-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Name Fields -->
+            <div class="form-group">
+              <label class="form-label">First Name *</label>
+              <input type="text" 
+                     formControlName="firstName"
+                     placeholder="Enter your first name"
+                     class="form-input"
+                     [class.error]="shippingForm.get('firstName')?.errors && shippingForm.get('firstName')?.touched">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Last Name *</label>
+              <input type="text" 
+                     formControlName="lastName"
+                     placeholder="Enter your last name"
+                     class="form-input"
+                     [class.error]="shippingForm.get('lastName')?.errors && shippingForm.get('lastName')?.touched">
+            </div>
+
+            <!-- Address Fields -->
+            <div class="form-group full-width">
+              <label class="form-label">Street Address *</label>
+              <input type="text" 
+                     formControlName="address"
+                     placeholder="Street address, P.O. box, company name"
+                     class="form-input"
+                     [class.error]="shippingForm.get('address')?.errors && shippingForm.get('address')?.touched">
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Apartment, suite, etc. (optional)</label>
+              <input type="text" 
+                     formControlName="address2"
+                     placeholder="Apartment, suite, unit, building, floor, etc."
+                     class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">City *</label>
+              <input type="text" 
+                     formControlName="city"
+                     placeholder="City"
+                     class="form-input"
+                     [class.error]="shippingForm.get('city')?.errors && shippingForm.get('city')?.touched">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">State / Province *</label>
+              <select formControlName="state" 
+                      class="form-select"
+                      [class.error]="shippingForm.get('state')?.errors && shippingForm.get('state')?.touched">
+                <option value="">Select state</option>
+                <option *ngFor="let state of states" [value]="state.code">{{ state.name }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">ZIP / Postal Code *</label>
+              <input type="text" 
+                     formControlName="zipCode"
+                     placeholder="ZIP or postal code"
+                     class="form-input"
+                     [class.error]="shippingForm.get('zipCode')?.errors && shippingForm.get('zipCode')?.touched">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Country *</label>
+              <select formControlName="country" 
+                      class="form-select"
+                      [class.error]="shippingForm.get('country')?.errors && shippingForm.get('country')?.touched">
+                <option value="">Select country</option>
+                <option *ngFor="let country of countries" [value]="country.code">{{ country.name }}</option>
+              </select>
+            </div>
+
+            <!-- Shipping Options -->
+            <div class="form-group full-width">
+              <label class="form-label">Shipping Method</label>
+              <div class="shipping-options">
+                <label class="shipping-option" 
+                       *ngFor="let option of shippingOptions"
+                       [class.selected]="selectedShippingOption?.id === option.id">
+                  <input type="radio" 
+                         [value]="option.id"
+                         (change)="selectShippingOption(option)"
+                         name="shipping">
+                  <div class="option-content">
+                    <div class="option-info">
+                      <span class="option-name">{{ option.name }}</span>
+                      <span class="option-description">{{ option.description }}</span>
+                    </div>
+                    <div class="option-price">
+                      <span *ngIf="option.price === 0" class="free">Free</span>
+                      <span *ngIf="option.price > 0">${{ option.price | number:'1.2-2' }}</span>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </form>
+
+          <div class="form-actions">
+            <button class="btn-secondary" routerLink="/cart">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5"/>
+                <path d="M12 19l-7-7 7-7"/>
+              </svg>
+              Back to Cart
+            </button>
+            <button class="btn-primary" 
+                    (click)="nextStep()"
+                    [disabled]="shippingForm.invalid" style="color: black;">
+              Continue to Payment
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14"/>
+                <path d="M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Payment Information -->
+<!-- Replace the entire Step 2: Payment Information section with this fixed version -->
+
+<!-- Step 2: Payment Information -->
+<div class="form-section" *ngIf="currentStep === 2" [@slideIn]>
+  <div class="section-header">
+    <h2 class="section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+        <line x1="1" y1="10" x2="23" y2="10"/>
+      </svg>
+      Payment Information
+    </h2>
+    <p class="section-description">All transactions are secure and encrypted</p>
+  </div>
+
+  <!-- Payment Methods - ALWAYS VISIBLE -->
+  <div class="payment-methods-section">
+    <label class="form-label">Payment Method</label>
+    <div class="payment-methods">
+      <label class="payment-method" 
+             *ngFor="let method of paymentMethods"
+             [class.selected]="selectedPaymentMethod?.id === method.id"
+             (click)="selectPaymentMethod(method)">
+        <input type="radio" 
+               [value]="method.id"
+               [checked]="selectedPaymentMethod?.id === method.id"
+               name="payment"
+               style="display: none;">
+        <div class="method-content">
+          <div class="method-icon">
+            <img [src]="method.icon" [alt]="method.name">
+          </div>
+          <span class="method-name">{{ method.name }}</span>
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Credit Card Form - Show when card is selected -->
+  <div class="card-form" *ngIf="selectedPaymentMethod?.id === 'card'">
+    <h4 class="subsection-title">Card Information</h4>
+    
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label class="form-label">Card Number *</label>
+        <div class="card-input-wrapper">
+          <input type="text" 
+                 #cardNumberInput
+                 [value]="getPaymentFormValue('cardNumber')"
+                 placeholder="1234 5678 9012 3456"
+                 class="form-input card-input"
+                 (input)="onCardNumberChange($event)"
+                 maxlength="19"
+                 [class.error]="paymentForm.get('cardNumber')?.errors && paymentForm.get('cardNumber')?.touched">
+          <div class="card-type-icon" *ngIf="detectedCardType">
+            <img [src]="getCardTypeIcon(detectedCardType)" [alt]="detectedCardType">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Expiry Date *</label>
+        <input type="text" 
+               [value]="getPaymentFormValue('expiryDate')"
+               placeholder="MM / YY"
+               class="form-input"
+               (input)="onExpiryDateChange($event)"
+               maxlength="7"
+               [class.error]="paymentForm.get('expiryDate')?.errors && paymentForm.get('expiryDate')?.touched">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">CVV *</label>
+        <div class="cvv-input-wrapper">
+          <input type="text" 
+                 formControlName="cvv"
+                 placeholder="123"
+                 class="form-input"
+                 maxlength="4"
+                 [class.error]="paymentForm.get('cvv')?.errors && paymentForm.get('cvv')?.touched">
+          <div class="cvv-info" title="3-4 digit security code on the back of your card">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9,9h0a3,3,0,0,1,3,3v1"/>
+              <line x1="9" y1="17" x2="15" y2="17"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label class="form-label">Cardholder Name *</label>
+        <input type="text" 
+               formControlName="cardholderName"
+               placeholder="Name as it appears on card"
+               class="form-input"
+               [class.error]="paymentForm.get('cardholderName')?.errors && paymentForm.get('cardholderName')?.touched">
+      </div>
+    </div>
+  </div>
+
+  <!-- Other Payment Methods Info -->
+  <div class="payment-info" *ngIf="selectedPaymentMethod?.id !== 'card'">
+    <div class="payment-note">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 16v-4"/>
+        <path d="M12 8h.01"/>
+      </svg>
+      <p>You will be redirected to {{ selectedPaymentMethod?.name }} to complete your payment securely.</p>
+    </div>
+  </div>
+
+  <!-- Billing Address Toggle - ALWAYS VISIBLE -->
+  <div class="billing-address-section">
+    <div class="billing-address-toggle">
+      <label class="checkbox-label">
+        <input type="checkbox" 
+               [(ngModel)]="billingAddressSameAsShipping"
+               [ngModelOptions]="{standalone: true}">
+        <span class="checkmark"></span>
+        <span class="label-text">Billing address is the same as shipping address</span>
+      </label>
+    </div>
+
+    <!-- Billing Address Form (if different) -->
+    <div class="billing-form" *ngIf="!billingAddressSameAsShipping" [@slideIn]>
+      <h4 class="subsection-title">Billing Address</h4>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          <input type="text" 
+                 formControlName="billingFirstName"
+                 placeholder="First name"
+                 class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          <input type="text" 
+                 formControlName="billingLastName"
+                 placeholder="Last name"
+                 class="form-input">
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Address *</label>
+          <input type="text" 
+                 formControlName="billingAddress"
+                 placeholder="Street address"
+                 class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">City *</label>
+          <input type="text" 
+                 formControlName="billingCity"
+                 placeholder="City"
+                 class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ZIP Code *</label>
+          <input type="text" 
+                 formControlName="billingZipCode"
+                 placeholder="ZIP code"
+                 class="form-input">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Debug Info -->
+  <div class="debug-info" style="background: #f0f0f0; padding: 16px; margin: 16px 0; border-radius: 8px; font-size: 12px;">
+    <h4>Debug Info:</h4>
+    <p>Selected Payment Method: {{ selectedPaymentMethod?.name }}</p>
+    <p>Payment Valid: {{ isPaymentValid() }}</p>
+    <p>Card Number: "{{ getPaymentFormValue('cardNumber') }}"</p>
+    <p>CVV: "{{ getPaymentFormValue('cvv') }}"</p>
+    <p>Cardholder: "{{ getPaymentFormValue('cardholderName') }}"</p>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn-secondary" (click)="previousStep()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5"/>
+        <path d="M12 19l-7-7 7-7"/>
+      </svg>
+      Back to Shipping
+    </button>
+    <button class="btn-primary" 
+            (click)="nextStep()"
+            [disabled]="!isPaymentValid()">
+      Review Order
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 12h14"/>
+        <path d="M12 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+        <!-- Step 3: Order Review -->
+        <div class="form-section" *ngIf="currentStep === 3" [@slideIn]>
+          <div class="section-header">
+            <h2 class="section-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3 8-8"/>
+                <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"/>
+              </svg>
+              Review Your Order
+            </h2>
+            <p class="section-description">Please review your order details before placing your order</p>
+          </div>
+
+          <div class="review-content">
+            <!-- Order Items -->
+            <div class="review-section">
+              <h4 class="review-title">Order Items</h4>
+              <div class="review-items">
+                <div class="review-item" *ngFor="let item of cartItems">
+                  <img [src]="item.product.image" [alt]="item.product.name" class="item-image">
+                  <div class="item-details">
+                    <h5 class="item-name">{{ item.product.name }}</h5>
+                    <p class="item-brand">{{ item.product.brand }}</p>
+                    <p class="item-quantity">Qty: {{ item.quantity }}</p>
+                  </div>
+                  <div class="item-price">
+                    ${{ (item.product.price * item.quantity) | number:'1.2-2' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="review-section">
+              <h4 class="review-title">Shipping Address</h4>
+              <div class="address-card">
+                <p class="address-name">{{ getShippingFormValue('firstName') }} {{ getShippingFormValue('lastName') }}</p>
+                <p class="address-line">{{ getShippingFormValue('address') }}</p>
+                <p class="address-line" *ngIf="getShippingFormValue('address2')">{{ getShippingFormValue('address2') }}</p>
+                <p class="address-line">{{ getShippingFormValue('city') }}, {{ getShippingFormValue('state') }} {{ getShippingFormValue('zipCode') }}</p>
+                <p class="address-line">{{ getShippingFormValue('country') }}</p>
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="review-section">
+              <h4 class="review-title">Payment Method</h4>
+              <div class="payment-card">
+                <div class="payment-info">
+                  <img [src]="selectedPaymentMethod?.icon" [alt]="selectedPaymentMethod?.name" class="payment-icon">
+                  <span class="payment-text">{{ selectedPaymentMethod?.name }}</span>
+                  <span class="card-ending" *ngIf="selectedPaymentMethod?.id === 'card' && getPaymentFormValue('cardNumber')">
+                    •••• {{ getCardLastFour() }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-secondary" (click)="previousStep()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5"/>
+                <path d="M12 19l-7-7 7-7"/>
+              </svg>
+              Back to Payment
+            </button>
+            <button class="btn-primary place-order" 
+                    (click)="placeOrder()"
+                    [disabled]="isProcessingOrder">
+              <div class="btn-content">
+                <svg *ngIf="!isProcessingOrder" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="1" y="3" width="15" height="13"/>
+                  <polygon points="16,8 20,8 23,11 23,16 16,16 16,8"/>
+                  <circle cx="5.5" cy="18.5" r="2.5"/>
+                  <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+                <div *ngIf="isProcessingOrder" class="loading-spinner"></div>
+                <span>{{ isProcessingOrder ? 'Processing...' : 'Place Order' }}</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary Sidebar -->
+      <div class="order-summary">
+        <div class="summary-card">
+          <h3 class="summary-title">Order Summary</h3>
+          
+          <!-- Order Items Preview -->
+          <div class="summary-items">
+            <div class="summary-item" *ngFor="let item of cartItems">
+              <img [src]="item.product.image" [alt]="item.product.name" class="summary-item-image">
+              <div class="summary-item-details">
+                <p class="summary-item-name">{{ item.product.name }}</p>
+                <p class="summary-item-qty">Qty: {{ item.quantity }}</p>
+              </div>
+              <span class="summary-item-price">${{ (item.product.price * item.quantity) | number:'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <hr class="summary-divider">
+
+          <!-- Price Breakdown -->
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>${{ getSubtotal() | number:'1.2-2' }}</span>
+          </div>
+          
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>{{ getShippingCost() === 0 ? 'Free' : '$' + (getShippingCost() | number:'1.2-2') }}</span>
+          </div>
+          
+          <div class="summary-row">
+            <span>Tax</span>
+            <span>${{ getTax() | number:'1.2-2' }}</span>
+          </div>
+
+          <hr class="summary-divider">
+          
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>${{ getTotal() | number:'1.2-2' }}</span>
+          </div>
+
+          <!-- Security Icons -->
+          <div class="security-badges">
+            <div class="security-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <circle cx="12" cy="16" r="1"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span>Secure Checkout</span>
+            </div>
+            <div class="security-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <span>SSL Protected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

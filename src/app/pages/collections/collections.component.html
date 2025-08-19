@@ -1,0 +1,67 @@
+<app-header></app-header>
+<div class="collections-page">
+  <!-- Header Section -->
+  <section class="collections-header">
+    <div class="header-content">
+      <h1 class="page-title">Beauty Collections</h1>
+      <p class="page-subtitle">Discover curated beauty collections for every style and occasion</p>
+    </div>
+  </section>
+
+  <!-- Collections Grid -->
+  <div class="collections-container">
+    <div class="collections-grid">
+      <div class="collection-card" 
+           *ngFor="let collection of collections; trackBy: trackCollection"
+           [@cardAnimation]
+           (click)="viewCollection(collection)">
+        
+        <div class="collection-image">
+          <img [src]="collection.image" [alt]="collection.name" (load)="onImageLoad($event)">
+          <div class="collection-overlay">
+            <div class="overlay-content">
+              <h3 class="collection-name">{{ collection.name }}</h3>
+              <p class="collection-description">{{ collection.description }}</p>
+              <div class="collection-stats">
+                <span class="product-count">{{ collection.productCount }} Products</span>
+                <span class="price-range">${{ collection.priceRange.min }} - ${{ collection.priceRange.max }}</span>
+              </div>
+              <button class="view-collection-btn">
+                View Collection
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14"/>
+                  <path d="M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="collection-info">
+          <div class="collection-meta">
+            <h3 class="collection-title">{{ collection.name }}</h3>
+            <p class="collection-subtitle">{{ collection.subtitle }}</p>
+          </div>
+          <div class="collection-preview">
+            <div class="preview-products">
+              <img *ngFor="let product of collection.previewProducts; let i = index"
+                   [src]="product.image" 
+                   [alt]="product.name"
+                   class="preview-product"
+                   [style.z-index]="collection.previewProducts.length - i">
+            </div>
+            <span class="more-count" *ngIf="collection.productCount > 3">
+              +{{ collection.productCount - 3 }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <p>Loading collections...</p>
+    </div>
+  </div>
+</div>

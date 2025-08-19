@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { CartService } from '../shared/cart.service';
 
 interface Product {
   id: number;
@@ -13,6 +15,7 @@ interface Product {
   isNew?: boolean;
   onSale?: boolean;
   isFeatured?: boolean;
+  category?: string;
 }
 
 @Component({
@@ -33,7 +36,8 @@ export class FeaturedProductsComponent {
       rating: 4.8,
       reviewCount: 124,
       isNew: true,
-      onSale: true
+      onSale: true,
+      category: 'Hair Care'
     },
     {
       id: 2,
@@ -43,7 +47,8 @@ export class FeaturedProductsComponent {
       desc: 'Professional-grade shampoo and conditioner bundle',
       rating: 4.9,
       reviewCount: 89,
-      isFeatured: true
+      isFeatured: true,
+      category: 'Hair Care'
     },
     {
       id: 3,
@@ -54,17 +59,21 @@ export class FeaturedProductsComponent {
       desc: 'Advanced formula for stronger, healthier hair growth',
       rating: 4.7,
       reviewCount: 156,
-      onSale: true
+      onSale: true,
+      category: 'Hair Care'
     }
   ];
 
+  constructor(private router: Router,  private cartService: CartService) {}
+
+
   onAddToCart(product: Product) {
-    console.log('Added to cart:', product);
+    this.cartService.addToCart(product);
     // Add your cart logic here
   }
 
   onViewProduct(product: Product) {
-    console.log('View product:', product);
+    this.router.navigate(['/featured', product.id]);
     // Add your navigation logic here
   }
 
@@ -79,7 +88,6 @@ export class FeaturedProductsComponent {
   }
 
   onViewAll() {
-    console.log('View all products');
-    // Add your navigation logic here
+    this.router.navigate(['/featured']);
   }
 }

@@ -1,30 +1,314 @@
-<div class="page-header">
-  <h2>Products</h2>
-  <button mat-raised-button color="primary" routerLink="/dashboard/products/create">Create Product</button>
+<div class="product-list-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="container">
+      <div class="header-content">
+        <div class="header-text">
+          <h1 class="page-title">Product Management</h1>
+          <p class="page-subtitle">Manage your product catalog and inventory</p>
+        </div>
+        <button class="btn-primary" (click)="createNewProduct()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14"/>
+            <path d="M5 12h14"/>
+          </svg>
+          Add New Product
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    
+    <!-- Filters and Search -->
+    <div class="filters-section" [@slideIn]>
+      <div class="filters-row">
+        
+        <!-- Search -->
+        <div class="search-group">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            <input type="text" 
+                   [(ngModel)]="searchTerm"
+                   (input)="onSearch()"
+                   placeholder="Search products..."
+                   class="search-input">
+          </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="filter-group">
+          <select [(ngModel)]="selectedCategory" 
+                  (change)="onCategoryChange()"
+                  class="filter-select">
+            <option value="">All Categories</option>
+            <option *ngFor="let category of categories" [value]="category">
+              {{ category }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Status Filter -->
+        <div class="filter-group">
+          <select [(ngModel)]="selectedStatus" 
+                  (change)="onStatusChange()"
+                  class="filter-select">
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+
+        <!-- View Toggle -->
+        <div class="view-toggle">
+          <button class="toggle-btn" 
+                  [class.active]="viewMode === 'table'"
+                  (click)="viewMode = 'table'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"/>
+              <path d="M3 12h18"/>
+              <path d="M3 18h18"/>
+            </svg>
+          </button>
+          <button class="toggle-btn" 
+                  [class.active]="viewMode === 'grid'"
+                  (click)="viewMode = 'grid'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Results Summary -->
+      <div class="results-summary">
+        <span class="results-count">
+          {{ filteredProducts.length }} {{ filteredProducts.length === 1 ? 'product' : 'products' }} found
+        </span>
+        <span class="showing-text">
+          Showing {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredProducts.length) }} 
+          of {{ filteredProducts.length }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading" [@fadeIn]>
+      <div class="loading-spinner"></div>
+      <p>Loading products...</p>
+    </div>
+
+    <!-- Products Table -->
+    <div class="table-container" *ngIf="!isLoading && viewMode === 'table'" [@slideIn]>
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th class="sortable" (click)="sort('category')">
+              <div class="header-content">
+                <span class="category-icon">📂</span>
+                Category
+                <svg class="sort-icon" 
+                     [class.asc]="sortBy === 'category' && sortDirection === 'asc'"
+                     [class.desc]="sortBy === 'category' && sortDirection === 'desc'"
+                     width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 14l5-5 5 5"/>
+                </svg>
+              </div>
+            </th>
+            <th class="sortable" (click)="sort('name')">
+              <div class="header-content">
+                Product Name
+                <svg class="sort-icon" 
+                     [class.asc]="sortBy === 'name' && sortDirection === 'asc'"
+                     [class.desc]="sortBy === 'name' && sortDirection === 'desc'"
+                     width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 14l5-5 5 5"/>
+                </svg>
+              </div>
+            </th>
+            <th class="sortable" (click)="sort('price')">
+              <div class="header-content">
+                Price
+                <svg class="sort-icon" 
+                     [class.asc]="sortBy === 'price' && sortDirection === 'asc'"
+                     [class.desc]="sortBy === 'price' && sortDirection === 'desc'"
+                     width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 14l5-5 5 5"/>
+                </svg>
+              </div>
+            </th>
+            <th class="sortable" (click)="sort('rating')">
+              <div class="header-content">
+                Rating
+                <svg class="sort-icon" 
+                     [class.asc]="sortBy === 'rating' && sortDirection === 'asc'"
+                     [class.desc]="sortBy === 'rating' && sortDirection === 'desc'"
+                     width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 14l5-5 5 5"/>
+                </svg>
+              </div>
+            </th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of paginatedProducts; trackBy: trackByProductId" 
+              class="product-row"
+              [@fadeIn]>
+            
+            <!-- Category -->
+            <td class="category-cell">
+              <div class="category-content">
+                <span class="category-icon">{{ getCategoryIcon(product.category) }}</span>
+                <span class="category-name">{{ product.category }}</span>
+              </div>
+            </td>
+
+            <!-- Product Name -->
+            <td class="product-cell">
+              <div class="product-content">
+                <div class="product-image">
+                  <img [src]="product.image" [alt]="product.name">
+                </div>
+                <div class="product-info">
+                  <h4 class="product-name">{{ product.name }}</h4>
+                  <p class="product-description">{{ product.description }}</p>
+                </div>
+              </div>
+            </td>
+
+            <!-- Price -->
+            <td class="price-cell">
+              <div class="price-content">
+                <span class="currency">$</span>
+                <span class="amount">{{ product.price | number:'1.2-2' }}</span>
+              </div>
+            </td>
+
+            <!-- Rating -->
+            <td class="rating-cell">
+              <div class="rating-content">
+                <div class="stars">
+                  <span *ngFor="let filled of getStarArray(product.rating)" 
+                        class="star" 
+                        [class.filled]="filled">
+                    ★
+                  </span>
+                </div>
+                <span class="rating-number">{{ product.rating }}/5</span>
+              </div>
+            </td>
+
+            <!-- Status -->
+            <td class="status-cell">
+              <span class="status-badge" [class]="getStatusColor(product.status)">
+                {{ product.status | titlecase }}
+              </span>
+            </td>
+
+            <!-- Actions -->
+            <td class="actions-cell">
+              <div class="action-buttons">
+                <button class="action-btn view" 
+                        (click)="viewProduct(product)"
+                        title="View Product">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+                
+                <button class="action-btn edit" 
+                        (click)="editProduct(product)"
+                        title="Edit Product">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                
+                <button class="action-btn toggle" 
+                        (click)="toggleStatus(product)"
+                        [title]="product.status === 'active' ? 'Deactivate' : 'Activate'">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v6m0 6v6"/>
+                  </svg>
+                </button>
+                
+                <button class="action-btn delete" 
+                        (click)="deleteProduct(product)"
+                        title="Delete Product">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"/>
+                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="filteredProducts.length === 0">
+        <div class="empty-icon">📦</div>
+        <h3>No products found</h3>
+        <p>Try adjusting your search or filter criteria</p>
+        <button class="btn-primary" (click)="createNewProduct()">
+          Add Your First Product
+        </button>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-container" *ngIf="!isLoading && filteredProducts.length > itemsPerPage" [@slideIn]>
+      <div class="pagination">
+        
+        <!-- Previous Button -->
+        <button class="page-btn prev" 
+                [disabled]="currentPage === 1"
+                (click)="goToPage(currentPage - 1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+          Previous
+        </button>
+
+        <!-- Page Numbers -->
+        <div class="page-numbers">
+          <button *ngFor="let page of pageNumbers" 
+                  class="page-number" 
+                  [class.active]="page === currentPage"
+                  (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        </div>
+
+        <!-- Next Button -->
+        <button class="page-btn next" 
+                [disabled]="currentPage === totalPages"
+                (click)="goToPage(currentPage + 1)">
+          Next
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Page Info -->
+      <div class="page-info">
+        Page {{ currentPage }} of {{ totalPages }}
+      </div>
+    </div>
+  </div>
 </div>
-
-<!-- Product list table (simplified) -->
-<table mat-table [dataSource]="products" class="mat-elevation-z8">
-
-  <!-- Columns -->
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef> Name </th>
-    <td mat-cell *matCellDef="let product"> {{product.name}} </td>
-  </ng-container>
-
-  <ng-container matColumnDef="price">
-    <th mat-header-cell *matHeaderCellDef> Price </th>
-    <td mat-cell *matCellDef="let product"> {{product.price}} </td>
-  </ng-container>
-
-  <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef> Actions </th>
-    <td mat-cell *matCellDef="let product">
-      <button mat-button color="accent">Edit</button>
-      <button mat-button color="warn">Delete</button>
-    </td>
-  </ng-container>
-
-  <tr mat-header-row *matHeaderRowDef="['name', 'price', 'actions']"></tr>
-  <tr mat-row *matRowDef="let row; columns: ['name', 'price', 'actions'];"></tr>
-</table>

@@ -301,6 +301,7 @@
   .testimonial-item {
     animation: testimonialSlideIn 0.8s ease-out both;
     cursor: pointer;
+    margin-top: 50px;
 
     &.featured {
       transform: scale(1.05);

@@ -294,28 +294,6 @@
 
     .menu-section {
       margin-bottom: 30px;
-
-      .section-label {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #adb5bd;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 15px;
-        padding-left: 15px;
-        position: relative;
-
-        &::after {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 50%;
-          width: 8px;
-          height: 2px;
-          background: linear-gradient(45deg, #b18b5e, #d4af37);
-          border-radius: 1px;
-        }
-      }
     }
 
     .nav-item {

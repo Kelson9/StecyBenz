@@ -1,0 +1,447 @@
+<div class="create-event-page">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item">Admin</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+          <span class="breadcrumb-item">Events</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+          <span class="breadcrumb-item active">Create Event</span>
+        </div>
+        
+        <h1 class="page-title">Create New Event</h1>
+        <p class="page-subtitle">Create engaging events to connect with your audience</p>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="btn btn-outline" (click)="onCancel()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18"/>
+            <path d="M6 6l12 12"/>
+          </svg>
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- Event Form -->
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="event-form">
+      <div class="form-layout">
+        
+        <!-- Main Content -->
+        <div class="main-content">
+          
+          <!-- Basic Information Card -->
+          <div class="form-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Basic Information
+              </h3>
+              <p class="card-description">Essential details about your event</p>
+            </div>
+
+            <div class="card-content">
+              <!-- Event Name -->
+              <div class="form-group">
+                <label for="name" class="form-label">
+                  Event Name <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  formControlName="name"
+                  class="form-input"
+                  [class.error]="isFieldInvalid('name')"
+                  placeholder="Enter event name">
+                <div class="error-message" *ngIf="isFieldInvalid('name')">
+                  {{ getFieldError('name') }}
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="form-group">
+                <label for="description" class="form-label">
+                  Description <span class="required">*</span>
+                </label>
+                <textarea
+                  id="description"
+                  formControlName="description"
+                  class="form-textarea"
+                  [class.error]="isFieldInvalid('description')"
+                  rows="4"
+                  placeholder="Describe your event..."></textarea>
+                <div class="character-count">
+                  {{ eventForm.get('description')?.value?.length || 0 }}/500 characters
+                </div>
+                <div class="error-message" *ngIf="isFieldInvalid('description')">
+                  {{ getFieldError('description') }}
+                </div>
+              </div>
+
+              <!-- Category -->
+              <div class="form-group">
+                <label for="category" class="form-label">
+                  Category <span class="required">*</span>
+                </label>
+                <select
+                  id="category"
+                  formControlName="category"
+                  class="form-select"
+                  [class.error]="isFieldInvalid('category')">
+                  <option value="">Select a category</option>
+                  <option *ngFor="let category of eventCategories" [value]="category">
+                    {{ category }}
+                  </option>
+                </select>
+                <div class="error-message" *ngIf="isFieldInvalid('category')">
+                  {{ getFieldError('category') }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Date & Time Card -->
+          <div class="form-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12,6 12,12 16,14"/>
+                </svg>
+                Date & Time
+              </h3>
+              <p class="card-description">When will your event take place?</p>
+            </div>
+
+            <div class="card-content">
+              <div class="form-row">
+                <!-- Date -->
+                <div class="form-group">
+                  <label for="date" class="form-label">
+                    Event Date <span class="required">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="date"
+                    formControlName="date"
+                    class="form-input"
+                    [class.error]="isFieldInvalid('date')">
+                  <div class="error-message" *ngIf="isFieldInvalid('date')">
+                    {{ getFieldError('date') }}
+                  </div>
+                </div>
+
+                <!-- Time -->
+                <div class="form-group">
+                  <label for="time" class="form-label">
+                    Event Time <span class="required">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    id="time"
+                    formControlName="time"
+                    class="form-input"
+                    [class.error]="isFieldInvalid('time')">
+                  <div class="error-message" *ngIf="isFieldInvalid('time')">
+                    {{ getFieldError('time') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location Card -->
+          <div class="form-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                Location Details
+              </h3>
+              <p class="card-description">Where will your event be held?</p>
+            </div>
+
+            <div class="card-content">
+              <!-- Venue -->
+              <div class="form-group">
+                <label for="venue" class="form-label">
+                  Venue Name <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="venue"
+                  formControlName="venue"
+                  class="form-input"
+                  [class.error]="isFieldInvalid('venue')"
+                  placeholder="e.g., StecyBenz Beauty Studio">
+                <div class="error-message" *ngIf="isFieldInvalid('venue')">
+                  {{ getFieldError('venue') }}
+                </div>
+              </div>
+
+              <!-- Address -->
+              <div class="form-group">
+                <label for="address" class="form-label">
+                  Full Address <span class="required">*</span>
+                </label>
+                <textarea
+                  id="address"
+                  formControlName="address"
+                  class="form-textarea"
+                  [class.error]="isFieldInvalid('address')"
+                  rows="3"
+                  placeholder="Enter the complete address including city, state, and postal code"></textarea>
+                <div class="error-message" *ngIf="isFieldInvalid('address')">
+                  {{ getFieldError('address') }}
+                </div>
+              </div>
+
+              <div class="form-row">
+                <!-- Capacity -->
+                <div class="form-group">
+                  <label for="capacity" class="form-label">
+                    Capacity <span class="required">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="capacity"
+                    formControlName="capacity"
+                    class="form-input"
+                    [class.error]="isFieldInvalid('capacity')"
+                    placeholder="Maximum attendees"
+                    min="1">
+                  <div class="error-message" *ngIf="isFieldInvalid('capacity')">
+                    {{ getFieldError('capacity') }}
+                  </div>
+                </div>
+
+                <!-- Ticket Price -->
+                <div class="form-group">
+                  <label for="ticketPrice" class="form-label">
+                    Ticket Price <span class="required">*</span>
+                  </label>
+                  <div class="input-with-prefix">
+                    <span class="input-prefix">$</span>
+                    <input
+                      type="number"
+                      id="ticketPrice"
+                      formControlName="ticketPrice"
+                      class="form-input"
+                      [class.error]="isFieldInvalid('ticketPrice')"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01">
+                  </div>
+                  <div class="error-message" *ngIf="isFieldInvalid('ticketPrice')">
+                    {{ getFieldError('ticketPrice') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tags Card -->
+          <div class="form-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                  <line x1="7" y1="7" x2="7.01" y2="7"/>
+                </svg>
+                Tags & Keywords
+              </h3>
+              <p class="card-description">Help people discover your event (max 5 tags)</p>
+            </div>
+
+            <div class="card-content">
+              <div class="tags-container">
+                <div class="available-tags">
+                  <button
+                    type="button"
+                    *ngFor="let tag of availableTags"
+                    class="tag-btn"
+                    [class.selected]="isTagSelected(tag)"
+                    (click)="toggleTag(tag)"
+                    [disabled]="!isTagSelected(tag) && selectedTags.length >= 5">
+                    {{ tag }}
+                  </button>
+                </div>
+                
+                <div class="selected-tags" *ngIf="selectedTags.length > 0">
+                  <h4>Selected Tags:</h4>
+                  <div class="selected-tags-list">
+                    <span class="selected-tag" *ngFor="let tag of selectedTags">
+                      {{ tag }}
+                      <button type="button" (click)="toggleTag(tag)" class="remove-tag">×</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+          
+          <!-- Flyer Upload Card -->
+          <div class="form-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21,15 16,10 5,21"/>
+                </svg>
+                Event Flyer
+              </h3>
+              <p class="card-description">Upload an attractive flyer for your event</p>
+            </div>
+
+            <div class="card-content">
+              <div class="file-upload-container">
+                <div class="file-upload-area" *ngIf="!flyerPreview">
+                  <input
+                    type="file"
+                    id="flyer"
+                    accept="image/*"
+                    (change)="onFileSelected($event)"
+                    class="file-input">
+                  <label for="flyer" class="file-upload-label">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14,2 14,8 20,8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                      <polyline points="10,9 9,9 8,9"/>
+                    </svg>
+                    <span>Drop your flyer here or click to browse</span>
+                    <small>PNG, JPG, GIF up to 5MB</small>
+                  </label>
+                </div>
+
+                <div class="flyer-preview" *ngIf="flyerPreview">
+                  <img [src]="flyerPreview" alt="Event flyer preview" class="preview-image">
+                  <div class="preview-actions">
+                    <button type="button" class="btn btn-danger btn-sm" (click)="removeFlyerImage()">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                      </svg>
+                      Remove
+                    </button>
+                    <label for="flyer" class="btn btn-outline btn-sm">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                      </svg>
+                      Change
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Event Settings Card -->
+          <div class="form-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                Event Settings
+              </h3>
+              <p class="card-description">Configure event visibility and registration</p>
+            </div>
+
+            <div class="card-content">
+              <div class="settings-group">
+                <label class="toggle-label">
+                  <input
+                    type="checkbox"
+                    formControlName="isPublic"
+                    class="toggle-input">
+                  <span class="toggle-slider"></span>
+                  <div class="toggle-content">
+                    <span class="toggle-title">Public Event</span>
+                    <span class="toggle-description">Anyone can view this event</span>
+                  </div>
+                </label>
+
+                <label class="toggle-label">
+                  <input
+                    type="checkbox"
+                    formControlName="requiresRegistration"
+                    class="toggle-input">
+                  <span class="toggle-slider"></span>
+                  <div class="toggle-content">
+                    <span class="toggle-title">Require Registration</span>
+                    <span class="toggle-description">Attendees must register to join</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-card">
+            <div class="card-content">
+              <div class="action-buttons">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-block"
+                  [disabled]="isSubmitting">
+                  <svg *ngIf="!isSubmitting" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                  </svg>
+                  <div *ngIf="isSubmitting" class="spinner"></div>
+                  {{ isSubmitting ? 'Creating Event...' : 'Create Event' }}
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline btn-block"
+                  (click)="onSaveDraft()"
+                  [disabled]="isSubmitting">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17,21 17,13 7,13 7,21"/>
+                    <polyline points="7,3 7,8 15,8"/>
+                  </svg>
+                  Save as Draft
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-block"
+                  (click)="onPreview()"
+                  [disabled]="isSubmitting">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  Preview Event
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

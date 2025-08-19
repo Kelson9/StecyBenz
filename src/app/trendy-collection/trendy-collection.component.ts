@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 interface Collection {
   id: number;
@@ -21,6 +22,8 @@ interface Collection {
   styleUrl: './trendy-collection.component.scss'
 })
 export class TrendyCollectionComponent {
+  constructor(private router: Router) {}
+
   collections: Collection[] = [
     {
       id: 1,
@@ -97,6 +100,7 @@ export class TrendyCollectionComponent {
 
   onViewAllCollections() {
     console.log('View all collections');
+    this.router.navigate(['/collections']);
     // Add navigation to all collections page
   }
 }

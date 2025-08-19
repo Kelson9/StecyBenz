@@ -73,9 +73,7 @@
 
   <!-- Navigation Menu -->
   <div class="nav-menu">
-    <div class="menu-section">
-      <div class="section-label" *ngIf="!isCollapsed">Main Menu</div>
-      
+    <div class="menu-section">      
       <!-- Dashboard -->
       <div class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
         <a routerLink="/dashboard" class="nav-link" [attr.title]="isCollapsed ? 'Dashboard' : null">
@@ -126,15 +124,6 @@
             </svg>
             Create Product
           </a>
-          <a routerLink="/dashboard/products/categories" routerLinkActive="active" class="submenu-link">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-            </svg>
-            Categories
-          </a>
         </div>
       </div>
 
@@ -173,15 +162,6 @@
               <line x1="8" y1="12" x2="16" y2="12"/>
             </svg>
             Create Event
-          </a>
-          <a routerLink="/dashboard/events/calendar" routerLinkActive="active" class="submenu-link">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            Calendar View
           </a>
         </div>
       </div>
@@ -268,6 +248,7 @@
   </div>
 
   <!-- Sidebar Footer -->
+   <!-- 
   <div class="sidebar-footer" *ngIf="!isCollapsed">
     <div class="footer-card">
       <div class="upgrade-prompt">
@@ -284,6 +265,7 @@
       </div>
     </div>
   </div>
+   -->
 
   <!-- Floating Action Button (when collapsed) -->
   <div class="floating-actions" *ngIf="isCollapsed">

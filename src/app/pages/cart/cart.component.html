@@ -1,0 +1,259 @@
+<app-header> </app-header>
+<div class="cart-page">
+  <div class="container">
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="breadcrumb">
+        <a routerLink="/" class="breadcrumb-link">Home</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">Shopping Cart</span>
+      </div>
+      <h1 class="page-title">Shopping Cart</h1>
+      <p class="page-subtitle" *ngIf="cartItems.length > 0">
+        You have {{ cartItems.length }} item{{ cartItems.length > 1 ? 's' : '' }} in your cart
+      </p>
+    </div>
+
+    <!-- Empty Cart State -->
+    <div class="empty-cart" *ngIf="cartItems.length === 0">
+      <div class="empty-cart-content">
+        <div class="empty-cart-icon">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6.01"/>
+          </svg>
+        </div>
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added any items to your cart yet.</p>
+        <button class="btn btn-primary" (click)="continueShopping()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5"/>
+            <path d="M12 19l-7-7 7-7"/>
+          </svg>
+          Continue Shopping
+        </button>
+      </div>
+    </div>
+
+    <!-- Cart Content -->
+    <div class="cart-content" *ngIf="cartItems.length > 0">
+      
+      <!-- Cart Items -->
+      <div class="cart-items-section">
+        <div class="section-header">
+          <h2>Cart Items ({{ cartItems.length }})</h2>
+          <button class="btn btn-outline btn-sm" (click)="clearCart()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18"/>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+            Clear Cart
+          </button>
+        </div>
+
+        <div class="cart-items">
+          <div class="cart-item" *ngFor="let item of cartItems; trackBy: trackByItemId">
+            
+            <!-- Product Image -->
+            <div class="item-image">
+              <img [src]="item.image" [alt]="item.name" loading="lazy">
+              <div class="item-badges" *ngIf="item.originalPrice">
+                <span class="badge sale">SALE</span>
+              </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="item-details">
+              <h3 class="item-name">{{ item.name }}</h3>
+              <p class="item-category" *ngIf="item.category">{{ item.category }}</p>
+              <div class="item-variant" *ngIf="item.variant">
+                <span>Variant: {{ item.variant }}</span>
+              </div>
+              
+              <!-- Price -->
+              <div class="item-pricing">
+                <span class="current-price">{{ formatCurrency(item.price) }}</span>
+                <span class="original-price" *ngIf="item.originalPrice">{{ formatCurrency(item.originalPrice) }}</span>
+                <span class="savings" *ngIf="getSavings(item) > 0">
+                  Save {{ formatCurrency(getSavings(item)) }}
+                </span>
+              </div>
+
+              <!-- Item Actions -->
+              <div class="item-actions">
+                <button class="action-link" (click)="saveForLater(item.id)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+                  </svg>
+                  Save for Later
+                </button>
+                <button class="action-link" (click)="moveToWishlist(item.id)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                  </svg>
+                  Move to Wishlist
+                </button>
+              </div>
+            </div>
+
+ <!-- Quantity Controls -->
+            <div class="item-quantity">
+              <label class="quantity-label">Quantity</label>
+              <div class="quantity-controls">
+                <button 
+                  class="quantity-btn" 
+                  (click)="updateQuantity(item.id, item.quantity - 1)"
+                  [disabled]="item.quantity <= 1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14"/>
+                  </svg>
+                </button>
+                <input 
+                  type="number" 
+                  class="quantity-input" 
+                  [value]="item.quantity"
+                  (change)="onQuantityChange($event, item.id)"
+                  min="1"
+                  max="99">
+                <button 
+                  class="quantity-btn" 
+                  (click)="updateQuantity(item.id, item.quantity + 1)"
+                  [disabled]="item.quantity >= 99">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14"/>
+                    <path d="M5 12h14"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Item Total -->
+            <div class="item-total">
+              <div class="total-price">{{ formatCurrency(getItemTotal(item)) }}</div>
+              <div class="unit-price">{{ formatCurrency(item.price) }} each</div>
+            </div>
+
+            <!-- Remove Button -->
+            <div class="item-remove">
+              <button class="remove-btn" (click)="removeItem(item.id)" title="Remove item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Summary -->
+      <div class="cart-summary-section">
+        <div class="cart-summary">
+          <h3>Order Summary</h3>
+
+          <!-- Promo Code -->
+          <div class="promo-code-section">
+            <label for="promoCode">Promo Code</label>
+            <div class="promo-input-group">
+              <input 
+                type="text" 
+                id="promoCode"
+                [(ngModel)]="promoCode"
+                placeholder="Enter promo code"
+                class="promo-input">
+              <button class="btn btn-outline btn-sm" (click)="applyPromoCode()">Apply</button>
+            </div>
+            <p class="promo-hint">Try: SAVE10 or FREESHIP</p>
+          </div>
+
+          <!-- Order Breakdown -->
+          <div class="order-breakdown">
+            <div class="breakdown-row">
+              <span>Subtotal ({{ cartItems.length }} items)</span>
+              <span>{{ formatCurrency(cartSubtotal) }}</span>
+            </div>
+            
+            <div class="breakdown-row">
+              <span>Shipping</span>
+              <span [class.free]="shipping === 0">
+                {{ shipping === 0 ? 'FREE' : formatCurrency(shipping) }}
+              </span>
+            </div>
+            
+            <div class="breakdown-row">
+              <span>Tax</span>
+              <span>{{ formatCurrency(tax) }}</span>
+            </div>
+            
+            <div class="breakdown-row discount" *ngIf="discount > 0">
+              <span>Discount</span>
+              <span>-{{ formatCurrency(discount) }}</span>
+            </div>
+            
+            <div class="breakdown-row total">
+              <span><strong>Total</strong></span>
+              <span><strong>{{ formatCurrency(cartTotal) }}</strong></span>
+            </div>
+          </div>
+
+          <!-- Free Shipping Progress -->
+          <div class="shipping-progress" *ngIf="shipping > 0">
+            <div class="progress-text">
+              Add {{ formatCurrency(75 - cartSubtotal) }} more for FREE shipping!
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="(cartSubtotal / 75) * 100"></div>
+            </div>
+          </div>
+
+  <!-- Action Buttons -->
+          <div class="cart-actions">
+            <button class="btn btn-primary btn-full" (click)="proceedToCheckout()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 12l2 2 4-4"/>
+                <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
+              </svg>
+              Proceed to Checkout
+            </button>
+
+            <!-- WhatsApp Order Button -->
+            <button class="btn btn-whatsapp btn-full" (click)="orderViaWhatsApp()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.52z"/>
+              </svg>
+              Order via WhatsApp
+            </button>
+            
+            <button class="btn btn-outline btn-full" (click)="continueShopping()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5"/>
+                <path d="M12 19l-7-7 7-7"/>
+              </svg>
+              Continue Shopping
+            </button>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="trust-badges">
+            <div class="trust-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+              <span>Secure Checkout</span>
+            </div>
+            <div class="trust-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span>Free Returns</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

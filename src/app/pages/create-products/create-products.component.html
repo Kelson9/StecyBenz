@@ -1,0 +1,287 @@
+<div class="create-product-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="container">
+      <div class="header-content">
+        <div class="header-text">
+          <h1 class="page-title">Create New Product</h1>
+          <p class="page-subtitle">Add your product details and images to get started</p>
+        </div>
+        <button class="btn-outline" routerLink="/dashboard/products">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5"/>
+            <path d="M12 19l-7-7 7-7"/>
+          </svg>
+          Back to Products
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form" [@slideIn]>
+      
+      <!-- Form Grid -->
+      <div class="form-grid">
+        
+        <!-- Left Column: Product Details -->
+        <div class="form-column">
+          
+          <!-- Category Selection -->
+          <div class="form-section">
+            <h3 class="section-title">Product Category</h3>
+            <div class="category-grid">
+              <label class="category-option" 
+                     *ngFor="let category of categories"
+                     [class.selected]="getFormValue('category') === category.id">
+                <input type="radio" 
+                       formControlName="category" 
+                       [value]="category.id"
+                       style="display: none;">
+                <div class="category-content">
+                  <span class="category-icon">{{ category.icon }}</span>
+                  <span class="category-name">{{ category.name }}</span>
+                </div>
+              </label>
+            </div>
+            <div class="error-message" *ngIf="hasError('category')">
+              {{ getError('category') }}
+            </div>
+          </div>
+
+          <!-- Product Information -->
+          <div class="form-section">
+            <h3 class="section-title">Product Information</h3>
+            
+            <div class="form-group">
+              <label class="form-label">Product Name *</label>
+              <input type="text" 
+                     formControlName="name"
+                     placeholder="Enter product name"
+                     class="form-input"
+                     [class.error]="hasError('name')">
+              <div class="error-message" *ngIf="hasError('name')">
+                {{ getError('name') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Description *</label>
+              <textarea formControlName="description"
+                        placeholder="Describe your product features, benefits, and usage instructions..."
+                        class="form-textarea"
+                        rows="5"
+                        [class.error]="hasError('description')"></textarea>
+              <div class="char-count">
+                {{ getFormValue('description').length }}/1000 characters
+              </div>
+              <div class="error-message" *ngIf="hasError('description')">
+                {{ getError('description') }}
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Price (USD) *</label>
+                <div class="price-input-wrapper">
+                  <span class="currency-symbol">$</span>
+                  <input type="number" 
+                         formControlName="price"
+                         placeholder="0.00"
+                         step="0.01"
+                         min="0"
+                         class="form-input price-input"
+                         [class.error]="hasError('price')">
+                </div>
+                <div class="error-message" *ngIf="hasError('price')">
+                  {{ getError('price') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Rating (Optional)</label>
+                <div class="rating-selector">
+                  <button type="button" 
+                          class="star-btn" 
+                          *ngFor="let star of [1,2,3,4,5]; let i = index"
+                          [class.active]="getFormValue('rating') > i"
+                          (click)="setRating(i + 1)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </button>
+                  <span class="rating-text">{{ getFormValue('rating') || 0 }} / 5</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Images -->
+        <div class="form-column">
+          <div class="form-section">
+            <h3 class="section-title">
+              Product Images
+              <span class="image-count">({{ productImages.length }}/{{ maxImages }})</span>
+            </h3>
+
+            <!-- Upload Area -->
+            <div class="upload-area" 
+                 [class.drag-over]="isDragOver"
+                 (dragover)="onDragOver($event)"
+                 (dragleave)="onDragLeave($event)"
+                 (drop)="onDrop($event)"
+                 (click)="fileInput.click()">
+              
+              <div class="upload-content">
+                <div class="upload-icon">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                    <polyline points="17,8 12,3 7,8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                </div>
+                <h4>Upload Product Images</h4>
+                <p>Drag and drop images here, or click to browse</p>
+                <div class="upload-specs">
+                  <span>PNG, JPG up to 5MB</span>
+                  <span>Maximum {{ maxImages }} images</span>
+                </div>
+              </div>
+
+              <input #fileInput 
+                     type="file" 
+                     multiple 
+                     accept="image/*" 
+                     (change)="onFileSelect($event)"
+                     style="display: none;">
+            </div>
+
+            <!-- Image Grid -->
+            <div class="image-grid" *ngIf="productImages.length > 0" [@fadeIn]>
+              <div class="image-item" 
+                   *ngFor="let image of productImages; let i = index"
+                   [class.main-image]="image.isMain">
+                
+                <div class="image-wrapper" (click)="openImagePreview(i)">
+                  <img [src]="image.url" [alt]="'Product image ' + (i + 1)">
+                  <div class="image-overlay">
+                    <button type="button" class="overlay-btn" (click)="$event.stopPropagation(); openImagePreview(i)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="image-actions">
+                  <button type="button" 
+                          class="action-btn primary"
+                          *ngIf="!image.isMain"
+                          (click)="setMainImage(i)"
+                          title="Set as main image">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Main
+                  </button>
+                  
+                  <span class="main-badge" *ngIf="image.isMain">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Main
+                  </span>
+
+                  <button type="button" 
+                          class="action-btn danger"
+                          (click)="removeImage(i)"
+                          title="Remove image">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 6L6 18"/>
+                      <path d="M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Image Requirements -->
+            <div class="image-requirements">
+              <h4>Image Guidelines:</h4>
+              <ul>
+                <li>Use high-quality images (minimum 500x500px)</li>
+                <li>Show your product from multiple angles</li>
+                <li>Include lifestyle or usage photos</li>
+                <li>Ensure good lighting and clear focus</li>
+                <li>The first image will be your main product image</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn-outline" (click)="resetForm()">
+          Reset Form
+        </button>
+        
+        <button type="submit" 
+                class="btn-primary" 
+                [disabled]="isSubmitting || !productForm.valid || productImages.length === 0">
+          
+          <div class="btn-content" *ngIf="!isSubmitting">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+              <polyline points="17,21 17,13 7,13 7,21"/>
+              <polyline points="7,3 7,8 15,8"/>
+            </svg>
+            Create Product
+          </div>
+          
+          <div class="btn-content" *ngIf="isSubmitting">
+            <div class="loading-spinner"></div>
+            Creating Product...
+          </div>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="image-preview-modal" *ngIf="previewMode" [@fadeIn] (click)="closeImagePreview()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="closeImagePreview()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18"/>
+        <path d="M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <div class="image-container">
+      <img [src]="productImages[currentImageIndex].url" alt="Product preview">
+    </div>
+
+    <div class="image-nav" *ngIf="productImages.length > 1">
+      <button class="nav-btn prev" (click)="previousImage()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      
+      <div class="image-counter">
+        {{ currentImageIndex + 1 }} / {{ productImages.length }}
+      </div>
+      
+      <button class="nav-btn next" (click)="nextImage()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
