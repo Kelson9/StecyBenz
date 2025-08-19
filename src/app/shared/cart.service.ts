@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 export interface CartItem {
   id: string;
   name: string;
-  price: number;
+  price?: number;
   originalPrice?: number;
   image: string;
   quantity: number;
@@ -112,9 +112,29 @@ export class CartService {
     }
   }
 
-  private parsePrice(priceString: string): number {
-    // Remove currency symbols and convert to number
-    return parseFloat(priceString.replace(/[^0-9.]/g, ''));
+  // Fixed parsePrice method - this is the key fix!
+  private parsePrice(price: any): number {
+    // Handle null or undefined
+    if (price == null) {
+      return 0;
+    }
+
+    // If price is already a number, return it
+    if (typeof price === 'number') {
+      return price;
+    }
+    
+    // If price is a string, parse it
+    if (typeof price === 'string') {
+      // Remove currency symbols, commas, and spaces, then parse
+      const cleanPrice = price.replace(/[$,\s₹€£¥]/g, '');
+      const parsedPrice = parseFloat(cleanPrice);
+      return isNaN(parsedPrice) ? 0 : parsedPrice;
+    }
+    
+    // Try to convert to number for other types
+    const numPrice = Number(price);
+    return isNaN(numPrice) ? 0 : numPrice;
   }
 
   private showSuccessMessage(productName: string): void {

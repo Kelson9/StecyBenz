@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { HeaderComponent } from '../../header/header.component';
+import { CartService } from '../../shared/cart.service';
 
 interface Product {
   id: string;
@@ -113,7 +114,7 @@ export class AllProductsComponent implements OnInit, OnDestroy {
     { value: 1, label: '1+ Stars' }
   ];
 
-  constructor() {}
+  constructor(private cartService: CartService) {}
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -171,8 +172,8 @@ export class AllProductsComponent implements OnInit, OnDestroy {
         id: `product-${index + 1}`,
         name: productNames[index] || `Beauty Product ${index + 1}`,
         brand: brandId,
-        price: Math.round(basePrice * 100) / 100,
-        originalPrice: originalPrice ? Math.round(originalPrice * 100) / 100 : undefined,
+        price: 2000,
+        originalPrice: 5000,
         image: `https://picsum.photos/400/500?random=${index + 1}`,
         rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
         reviewCount: Math.floor(Math.random() * 500) + 10,
@@ -466,18 +467,8 @@ export class AllProductsComponent implements OnInit, OnDestroy {
   }
 
   addToCart(product: Product): void {
-    if (product.stock > 0) {
-      // Here you would typically add to cart via service
-      console.log(`Added ${product.name} to cart`);
-      
-      // Show some feedback
-      const button = event?.target as HTMLElement;
-      if (button) {
-        button.classList.add('added');
-        setTimeout(() => button.classList.remove('added'), 1000);
-      }
+        this.cartService.addToCart(product);      
     }
-  }
 
   // Utility Methods
   trackProduct(index: number, product: Product): string {
